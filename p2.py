@@ -1,5 +1,20 @@
 import numpy as np
 
+# def solution():
+
+#     even = 0
+#     def helper(first, second):
+#         nonlocal even
+#         if first + second > 4000000:
+#             return 
+#         print(first + second)
+#         even += first + second if (first + second) % 2 == 0 else 0
+#         helper(second, first + second)
+
+#     helper(0,1)
+#     print(even)
+
+# dp
 def solution():
     dp = np.array([0, 1])
     last = dp[dp.size-1]
