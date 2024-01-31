@@ -1,5 +1,5 @@
 import numpy as np
-from helper import time_checker
+from utils import time_checker
 
 def is_prime(num):
     for n in range(2,int(num**(1/2))+1):
