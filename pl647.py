@@ -1,43 +1,25 @@
 class Solution:
     def countSubstrings(self, s: str) -> int:
-        DP = {}
-        # aaaa
-        # aaa aaa
-        # aa aa
-        # a a
-        # palins = self.helper(s, len(s), DP)
-        # print(palins + len(s)) 
-        self.helper(0, 0, s, DP)
-        
-    def helper(self, row, col, s, DP):
-        if not s:
-            return
-        elif s in DP:
-            return DP[s]
-            
-        left_s, right_s = s[:-1], s[1:]
-        
-        DP[(row,col)] = self.helper(left_s, row+1, col) + self.helper(right_s,row+1, col+1)
-
-        return DP[(row,col)]
-
-    def is_palin(self, s):
-        # aaa 3 // 2 = 1
-        # aaaaa 5 // 2 = 2 
         len_s = len(s)
-        left, right = (len_s // 2 - 1, len_s // 2) if len_s % 2 == 0 else (len_s // 2, len_s // 2)
-        while left >=0 and right < len_s:
-            if s[left] != s[right]:
-                return False
-            left -= 1
-            right += 1
-            
-        return True
-    
-        # for window in range(2, len(s)):
-        #     for left in range(len(s) - window):
-        #         subs = s[left: left + window]
-        #         if self.is_palin(subs):
-        #             pass
+        DP = [[False for _ in range(len_s)] for _ in range(len_s)]
+
+        total = 0
+        for i in range(len_s):
+            DP[0][i] = True
+            total += 1
+        
+        for i in range(len_s - 1):
+            if s[i] == s[i + 1]:
+                DP[1][i] = True
+                total += 1
+                
+        for layer in range(2, len_s):
+            for i in range(len_s - layer):
+                if s[i] == s[i + layer] and DP[layer-2][i + 1]:
+                    DP[layer][i] = True
+                    total += 1
+        # print(DP)
+        # print(total)
+        return total
 s = Solution()
-s.countSubstrings("aaaa")
+s.countSubstrings("aaa")
