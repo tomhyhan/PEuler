@@ -24,22 +24,7 @@ class Solution:
             max_t = max(max_t, array_sum + left_sum, array_sum + right_sum)
 
         return max_t
-class Solution:
-    def maxSumTwoNoOverlap(self, nums, firstLen: int, secondLen: int) -> int:
 
-        nums = list(accumulate(nums, initial = 0))
-        mx1 = mx2 = mx3 = 0
-        
-        for sm0,sm1,sm2,sm3 in zip(nums, 
-                                   nums[firstLen:],
-                                   nums[secondLen:],
-                                   nums[firstLen+secondLen:]):
-
-            mx1 = max(mx1, sm1 - sm0)
-            mx2 = max(mx2, sm2 - sm0)
-            mx3 = max(mx3, max(mx1 + sm3-sm1, mx2 + sm3-sm2))
-            
-        return mx3
 
 s = Solution()
 s.maxSumTwoNoOverlap([0,6,5,2,2,5,1,9,4], 1, 2)
