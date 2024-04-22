@@ -2,25 +2,49 @@ import math
 
 def solution():
     cnt = 0
-    for x in range(2, 10000):
-        x = math.sqrt(x)
-        x = x - int(x)
-        
-        if x == 0:
+    for n in range(2, 10_000):
+        sq = math.sqrt(n)
+        int_num = int(sq)
+        denom = 1
+        if sq.is_integer():
             continue
-
+        result = []
         seen = set()
+        
         while True:
-            x = 1 / x 
-            x = x - int(x)
-            key = round(x, 9)
-            if key in seen:
+            new_denom = n - int_num**2
+
+            gcd = math.gcd(denom, new_denom)
+            denom //= gcd
+            new_denom //= gcd
+            
+            split = int((sq + int_num) // new_denom)
+            int_part = split * denom
+            remainder = int_num - split * new_denom
+
+
+            int_num = -remainder
+            denom = new_denom
+            state = (denom, int_num)
+            if state in seen:
                 break
-            seen.add(key)
-        # print(seen)
-        if len(seen) % 2 == 1:
+            result.append(int_part)
+            seen.add(state)
+        # print(n, result)
+        if len(result) % 2 == 1:
             cnt += 1
     print(cnt)
+
+
+
+
+
+
+
+
+
+
+
 def expand_root(number: int) -> tuple[list[int], list[int]]:
     floor = int(math.sqrt(number))
     if floor**2 == number:
@@ -44,6 +68,8 @@ def expand_root(number: int) -> tuple[list[int], list[int]]:
         split = (floor + c) // d
         a = split * b
         c -= split * d
+        print('split, a, b, c, d' )
+        print(split, a, b, c, d)
         # print(f"{a} + {b} (sqrt({number}) + {c})/{d}")
         c = -c
         b = d
@@ -52,15 +78,13 @@ def expand_root(number: int) -> tuple[list[int], list[int]]:
         if state in states:
             break
         states.append(state)
+    print("state", states)
+    print("results", results)
     i = states.index(state) + 1
     return results[:i], results[i:]
 
-def solution() -> int:
-    result = 0
-    for number in range(23, 24):
-        beginning, period = expand_root(number)
-        if len(period) % 2 == 1:
-            result += 1
-    print(result)
-    return result
+
 solution()
+
+# print("-------")
+# print(expand_root(5))
