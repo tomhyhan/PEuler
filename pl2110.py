@@ -10,7 +10,7 @@ class Solution:
             else:
                 dp[i] = 1
             prev_p = current_p
-        return sum(dp)
+        return sum(dp) 
 s = Solution()
 s.getDescentPeriods([3,2,1,4])
     
