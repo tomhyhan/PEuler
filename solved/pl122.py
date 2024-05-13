@@ -10,4 +10,5 @@ class Solution:
         return sell
     
 s = Solution()
-s.maxProfit([7,1,5,0,6,4])
+# s.maxProfit([7,1,5,0,6,4])
+s.maxProfit([0,6,1,3])
