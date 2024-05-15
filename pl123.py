@@ -1,60 +1,26 @@
-class Solution:
-    def maxProfit(self, prices) -> int:
-        DP = {}
-        
-        BUY1 = 0
-        SELL1 = 1
-        
-        DP[(-1, BUY1)] = float("-inf")
-        DP[(-1, SELL1)] = 0
-        
-        for day, p in enumerate(prices):
-            DP[(day, BUY1)] = max(DP[(day-1, BUY1)], DP[(day-1, SELL1) - p])     
-            DP[(day, SELL1)] = max(DP[(day-1 , SELL1)], DP[(day-1, BUY1) + p])
-
-            DP[(day, BUY1)] = max(DP[(day-1, BUY1)], DP[(day-1, SELL1) - p])     
-            DP[(day, SELL1)] = max(DP[(day-1 , SELL1)], DP[(day-1, BUY1) + p])
-
-from collections import defaultdict
-import math
 
 class Solution:
     def maxProfit(self, prices) -> int:
+        memo = {}
+        max_profit = self.helper(prices, 0, 4, True, memo)
+        print(max_profit)
         
-        HOLD_STOCK, KEEP_CASH = 0, 1
+    def helper(self, prices, i, n_transactions, buy, memo):
+        key = (i, n_transactions, buy)
+        if i == len(prices) or n_transactions == 0:
+            return 0
+        elif key in memo:
+            return memo[key]
         
-        # dictionary
-        # key: state, kth-transaction
-        # value: corresponding profit
-        dp = defaultdict(int)        
+        price = -prices[i] if buy else prices[i]
+        transaction = self.helper(prices, i+1, n_transactions -1, not buy, memo) + price
+        no_transaction = self.helper(prices, i+1, n_transactions, buy, memo)
         
-        # No free lunch, impoosible to have stock before first trading day
-        dp[(HOLD_STOCK, 0)] = -math.inf
-        dp[(HOLD_STOCK, 1)] = -math.inf
-        dp[(HOLD_STOCK, 2)] = -math.inf
-        
+        max_profit = max(transaction, no_transaction)
+        memo[key] = max_profit
+        return max_profit
 
-        for stock_price in prices:
-            # Either we had stock already, or we just buy in stock today ( add one more transaction)
-            dp[HOLD_STOCK, 1] = max(dp[HOLD_STOCK, 1],  dp[KEEP_CASH, 0] - stock_price)
-            
-            ## For 1st transaction:
-            # Either we kept cash already, or we just sell out stock today
-            dp[KEEP_CASH, 1] = max(dp[KEEP_CASH, 1], dp[HOLD_STOCK, 1] + stock_price )
-            
-            # Either we had stock already, or we just buy in stock today ( add one more transaction)
-            dp[HOLD_STOCK, 2] = max(dp[HOLD_STOCK, 2], dp[KEEP_CASH, 1] - stock_price)
-            
-            ## For 2nd transaction:
-            # Either we kept cash already, or we just sell out stock today
-            dp[KEEP_CASH, 2] = max(dp[KEEP_CASH, 2], dp[ HOLD_STOCK, 2] + stock_price)
-            print(dp[HOLD_STOCK, 0], dp[KEEP_CASH, 0])
-            print(dp[HOLD_STOCK, 1], dp[KEEP_CASH, 1])
-            print(dp[HOLD_STOCK, 2], dp[KEEP_CASH, 2])
-            print()
-        # Maximal profit must be KEEP_CASH on last day
-        # (This means we cash out and sell stocks finally)
-        return dp[KEEP_CASH, 2]
     
 s = Solution()
-s.maxProfit([3,7,0,2])
+# s.maxProfit([3,3,5,0,0,3,1,4])
+s.maxProfit([0,2,0,4])
