@@ -45,7 +45,7 @@ class Solution:
             DP[(day, SELL)] = DP[(day-1, BUY)] + p
             DP[(day, BUY)] = max(DP[(day-1, BUY)], DP[(day-1, COOL_DOWN)] - p)
             
-        return max(DP[(day, COOL_DOWN)], DP[(day, COOL_DOWN)])
+        return max(DP[(day, COOL_DOWN)], DP[(day, SELL)])
              
     
 s = Solution()
