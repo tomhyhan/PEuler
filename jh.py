@@ -37,6 +37,26 @@ def cost(land, mid_h, P, Q):
         return 1, mid_c
     elif mid_bc >= mid_c >= mid_tc:
         return -1, mid_c
+    
 
-# solution([[1, 2], [2, 3]], 3, 2)
+def solution(land, P, Q):
+    land = list(sorted([num for l in land for num in l]))
+    n_blocks = sum(land) 
+
+    min_cost = float("inf")
+    blocks_so_far = 0
+    k = -1
+    for i in range(len(land)):
+        if land[i] != k:
+            install = i * land[i] - blocks_so_far
+            removes = n_blocks - blocks_so_far - (len(land) - i) * land[i]        
+            cost = install * P + removes * Q
+            min_cost = min(min_cost, cost)
+            k = land[i]
+        
+        blocks_so_far += land[i]
+        
+    return min_cost
+
+solution([[1, 2], [2, 3]], 3, 2)
 solution([[4, 4, 3], [3, 2, 2], [ 2, 1, 0 ]], 5, 3)
