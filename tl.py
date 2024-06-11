@@ -1,27 +1,28 @@
 from collections import defaultdict
 
-def dfs(node, graph):
+def dfs(start_node, graph):
     visited = set()
-    max_d = traverse(node, graph, 0, visited)
-    return max_d
 
-def traverse(node, graph, distance, visited):
-    """
-        check if max distance node has more than 1 nodes pointing to max distance node.
-        
-    """
-    if node in visited:
-        return distance-1
-    visited.add(node)
-    
-    nodes = graph[node]
-
+    stack = [(start_node, 0)]
     max_d = 0
-    max_node = node
-    for nnode in nodes:
-        max_d = max(max_d, traverse(nnode, graph, distance+1, visited))
+    max_nodes = []
+    while stack:
+        node, distance = stack.pop()
         
-    return max_d
+        if node in visited:
+            continue
+        visited.add(node)
+        
+        if distance > max_d:
+            max_d = distance
+            max_nodes = [node]
+        elif distance == max_d:
+            max_nodes.append(node)
+
+        for nnode in graph[node]:
+            stack.append((nnode, distance+1))
+
+    return max_d, max_nodes
     
 def solution(n, edges):
     graph = defaultdict(list)
@@ -30,8 +31,18 @@ def solution(n, edges):
         graph[x].append(y)
         graph[y].append(x)
 
-    distance = dfs(2, graph)
-    print(distance)
+    distance, max_nodes = dfs(1, graph)
+    distance, max_nodes = dfs(max_nodes[0], graph)
+    
+    if len(max_nodes) > 1:
+        return distance
+    
+    distance, max_nodes = dfs(max_nodes[0], graph)
+    
+    return distance -1 if len(max_nodes) == 1 else distance
+    
+    
+    print(distance, max_nodes)
 
-solution(4,[[1,2],[2,3],[3,4]])
+# solution(4,[[1,2],[2,3],[3,4]])
 solution(5,[[1,5],[2,5],[3,5],[4,5]])
