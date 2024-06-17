@@ -1,59 +1,37 @@
 from collections import defaultdict
 
-"""
-    DP = [0,0] + [0, sales[i]] for i in sales
-    
-    
-    
-
-"""
-# def solution(sales, links):
-#     graph = defaultdict(list)
-    
-#     for lead, emp in links:
-#         graph[lead].append(emp) 
-#     print(graph)
-
-from collections import defaultdict
-
-def init(links) :
-    edge_dict = defaultdict(list)
-    
-    for a, b in links :
-        edge_dict[a].append(b)
-        
-    return edge_dict
-
-def dfs(node, edge_dict, dp) :
-    if not edge_dict[node] :
+def dfs(node, DP, graph, sales):
+    if not graph[node]:
         return
     
-    cnt, zero_cnt, min_val, min_diff = 0, 0, 0, float('inf')
-    for leaf in edge_dict[node] :
-        dfs(leaf, edge_dict, dp)
-        min_val += min(dp[leaf])
-        cnt += 1
-        if dp[leaf][0] < dp[leaf][1] :
-            zero_cnt += 1
-            min_diff = min(min_diff, dp[leaf][1] - dp[leaf][0])
-    print(dp[node][1], min_val, min_diff, dp[node], zero_cnt, cnt)
-    dp[node][1] += min_val
-    dp[node][0] += min_val + min_diff if cnt == zero_cnt else min_val
-    print(dp[node])
-    print("-----------------")
-
-def solution(sales, links):
-    dp = [[0,0]] + [[0, sale] for sale in sales]
+    sum_child = 0
+    min_diff = float("inf")
+    include_leader = False
+    for nnode in graph[node]:
+        dfs(nnode, DP, graph, sales)
+        sum_child += min(DP[nnode])
+        min_diff = min(min_diff, DP[nnode][1] - DP[nnode][0])
+        if DP[nnode][0] > DP[nnode][1]:
+            include_leader = True
+            
+    DP[node][1] += sum_child
+    DP[node][0] = sum_child if include_leader else sum_child + min_diff
     
-    edge_dict = init(links)
-    dfs(1, edge_dict, dp)
-    return min(dp[1])
+def solution(sales, links):
+    graph = defaultdict(list)
+
+    for lead, emp in links:
+        graph[lead].append(emp) 
+
+    DP =[[0,0]] + [[0,sales[i]] for i in range(len(sales))]
+    dfs(1, DP, graph, sales)
+    return min(DP[1])
 
 
-# solution(
-#     [14,17,15,18,19,14,13,16,28,17],
-#     [[10,8],[1,9],[9,7],[5,4],[1,5],[5,10],[10,6],[1,3],[10,2]]
-# )
+solution(
+    [14,17,15,18,19,14,13,16,28,17],
+    [[10,8],[1,9],[9,7],[5,4],[1,5],[5,10],[10,6],[1,3],[10,2]]
+)
 # solution([5,6,5,3,4],[[2,3], [1,4], [2,5], [1,2]])
 # solution([5, 6, 5, 1, 4], [[2,3], [1,4], [2,5], [1,2]])
-solution([10, 10, 1, 1], [[3,2], [4,3], [1,4]])
+# solution([10, 10, 1, 1], [[3,2], [4,3], [1,4]])
