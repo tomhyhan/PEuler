@@ -1,43 +1,118 @@
 import heapq
+from copy import deepcopy
 from collections import defaultdict
 
+def switch(graph, node):
+    node_graph = graph[node]
+    # print("node_graph", node_graph)
+    for nnode in node_graph["st"]:        
+        ng = graph[nnode]
+        if node in ng["st"]:
+            ng["st"].remove(node)
+            ng["opp"].add(node)
+        elif node in ng["opp"]:
+            ng["opp"].remove(node)
+            ng["st"].add(node)
+    
+    for nnode in node_graph["opp"]:        
+        ng = graph[nnode]
+        if node in ng["st"]:
+            ng["st"].remove(node)
+            ng["opp"].add(node)
+        elif node in ng["opp"]:
+            ng["opp"].remove(node)
+            ng["st"].add(node)
+    
+    temp  = graph[node]["st"]
+    graph[node]["st"] = graph[node]["opp"]
+    graph[node]["opp"] = temp
+    
 def solution(n, start, end, roads, traps):
-    ngraph = defaultdict(lambda: {"st":[], "opp": []}) 
+    ngraph = defaultdict(lambda: {"st": set(), "opp": set()}) 
     distances = [[0 for _ in range(n+1)] for _ in range(n+1)]
     
     # 1 → 2 → 3 → 2 → 4
     for s, e, d  in roads:
-        ngraph[s]["st"].append(e)
-        ngraph[e]["opp"].append(s)
+        ngraph[s]["st"].add(e)
+        ngraph[e]["opp"].add(s)
         distances[s][e] = d
         distances[e][s] = d 
 
-    print(ngraph)
-    return
     # 1. Create a copy of graph in each iteration
     # 2. fix: find others ways without copying graph
-    heap = [(0, start, True)]
+    heap = [(0, start, ngraph)]
     cnt = 0
     while heap:
-        distance, node, straight = heapq.heappop(heap)
-        
+        distance, node, graph = heapq.heappop(heap)
+        # print(distance, node, graph)
+        # print("----")
         if node == end:
-            print(distance)
-            break
-
-        graph = sgraph if straight else ograph
-        
-        for nnode in graph[node]:
+            # print(distance)
+            return distance
+                
+        for nnode in graph[node]["st"]:
             next_d = distance + distances[node][nnode]
-            next_s = not straight if nnode in traps else straight
+            new_graph = deepcopy(graph)
+            if nnode in traps:
+                switch(new_graph, nnode)
             
-            print(node, nnode, next_d, next_s)
-            heapq.heappush(heap, (next_d, nnode, next_s))
-            
-        if cnt == 10:
-            break
-        cnt+= 1
+            heapq.heappush(heap, (next_d, nnode, new_graph))
 
-# solution(3, 1, 3, [[1, 2, 2], [3, 2, 3]], [2])
+# HELP!
+import heapq
+
+INF = 10**8 + 10
+d = [[INF] * 1024 for _ in range(1004)] # d[i][state] : (상태 0, start번 노드)에서 (상태 state, i번 노드)로 갈 때의 최단경로
+adj = [[] for _ in range(1004)] # 정방향 간선(번호, 시간)
+adjrev = [[] for _ in range(1004)] # 역방향 간선(번호, 시간)
+trapidx = [-1] * 1004 # trapidx[i] : i번 노드의 함정 번호. 함정은 0번부터 차례로 번호가 부여되어 있으며 i번 노드가 함정이 아닐 경우 -1
+
+# 상태 state에 i번 비트가 켜져있는지를 반환하는 함수
+def bitmask(state, idx):
+    return (1 << trapidx[idx]) & state
+
+def solution(n, start, end, roads, traps):
+    for u, v, val in roads:
+        adj[u].append((v,val))
+        adjrev[v].append((u,val))
+    
+    # trapidx 값 지정
+    for i in range(len(traps)):
+        trapidx[traps[i]] = i
+    
+    # dijkstra 진행
+    heap = []
+    d[start][0] = 0
+    heapq.heappush(heap, (d[start][0], start, 0))
+    while heap:
+        val, idx, state = heapq.heappop(heap)
+        # pq에서 뽑히는 원소는 가까운 순이라는 점을 이용해서 맨 마지막에 d[..][end]를 for문으로 순회하지 않아도 되게 idx == end일 때 바로 답을 반환
+        if idx == end: return val
+        if d[idx][state] != val: continue
+        for nxt, dist in adj[idx]: # 정방향 간선에 대한 확인
+            rev = 0
+            if trapidx[idx] != -1 and bitmask(state, idx): rev ^= 1 # 현재 idx번 trap을 밟은 상태라면 rev 상태를 뒤집음
+            if trapidx[nxt] != -1 and bitmask(state, nxt): rev ^= 1 # 현재 nxt번 trap을 밟은 상태라면 rev 상태를 뒤집음
+            if rev: continue # 정방향 간선을 보고 있으므로 trap을 1개만 밟은 상황일 경우 넘어감
+            nxt_state = state
+            if trapidx[nxt] != -1: nxt_state ^= (1 << trapidx[nxt])
+            if d[nxt][nxt_state] > dist + val:
+                d[nxt][nxt_state] = dist + val
+                heapq.heappush(heap, (d[nxt][nxt_state], nxt, nxt_state))
+        
+        for nxt, dist in adjrev[idx]: # 역방향 간선에 대한 확인
+            rev = 0
+            if trapidx[idx] != -1 and bitmask(state, idx): rev ^= 1 # 현재 idx번 trap을 밟은 상태라면 rev 상태를 뒤집음
+            if trapidx[nxt] != -1 and bitmask(state, nxt): rev ^= 1 # 현재 nxt번 trap을 밟은 상태라면 rev 상태를 뒤집음
+            if not rev: continue # 역방향 간선을 보고 있으므로 trap을 0개 or 2개 밟은 상황일 경우 넘어감
+            nxt_state = state
+            if trapidx[nxt] != -1: nxt_state ^= (1 << trapidx[nxt])
+            if d[nxt][nxt_state] > dist + val:
+                d[nxt][nxt_state] = dist + val
+                heapq.heappush(heap, (d[nxt][nxt_state], nxt, nxt_state))
+    
+    return -1 # Unreachable
+
+solution(3, 1, 3, [[1, 2, 2], [3, 2, 3]], [2])
 
 solution(4, 1, 4, [[1, 2, 1], [3, 2, 1], [2, 4, 1]], [2, 3])
