@@ -18,15 +18,13 @@ def solution(stones, k):
                 prev_d = next_d
 
         if len(stones) + 1  - prev_d > k:
-            print (len(stones) + 1 , prev_d)
             diff = len(stones) + 1 - prev_d
-            
+
         if diff > k:
             right = mid - 1
         else:
             left = mid + 1
             n = left
-
     return n
 
 solution([2, 4, 5, 3, 2, 1, 4, 2, 5, 1], 3)
