@@ -29,40 +29,47 @@ def cut_card(card_pos, cut_by, N):
 def back_cut_card(card_pos, cut_by, N):
     return (card_pos + cut_by) % N
    
+def mod_inv(inc_by, N):
+    return pow(inc_by, N - 2, N)
+
 def solution():
     tokens = tokenize()
-    N = 10007
 
-    card_pos = 1510
-    visited = set()
-    cnt = 0
+    card_pos = 0
+    # card_pos = 2020
+    # N = 119315717514047
+    N = 10
+    times = 101741582076661
+    off = 0
+    inc = 1
     # while cnt < 3:
     for token in reversed(tokens):
         match token[0]:
             case 0:
                 # increment
                 inc_by = token[1]
-                # card_pos = increment_card(card_pos, inc_by, N)
-                # card_pos = (card_pos * pow(inc_by, -1, N)) % N 
-                card_pos = pow(inc_by, N - 2, N)
+                pinv = pow(inc_by, N-2,N)
+                inc *= pinv
+                off *= pinv
             case 1:
                 # new stack
-                card_pos = back_new_stack(card_pos, N)
+                off += 1
+                inc *= -1
+                off *= -1
+                print(off, inc )
             case 2:
                 # cut
                 cut_by = token[1]
-                card_pos = back_cut_card(card_pos, cut_by, N)
-    cnt += 1
-    print(card_pos)
-    #  1 7 9 
-    
-    # Okay need to use fermat's little theorem ;)
-    
-    off = 0
-    inc = 1
-    card_pos = 2020
-    N = 119315717514047
-    times = 101741582076661
+                off += cut_by
+        inc %= N
+        off %= N
+    print(-1 % 10)
+    # print((
+    #     pow(inc, times, N) * card_pos +
+    #     off * (pow(inc, times, N) +N- 1)
+    #       * (pow(inc-1, N - 2, N))
+    # ) % N)
+        
 solution()
 
 
