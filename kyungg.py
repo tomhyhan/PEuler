@@ -5,6 +5,7 @@ from collections import defaultdict
 # djikstra, 
 DIRECTIONS = [(0,-1), (1,0),(0,1),(-1,0)]
 def solution(board):
+    # 25 * 25 * 4
     len_b = len(board)    
     visited = defaultdict(lambda: float('inf'))
     queue = [(0,0,0,1), (0,0,0,2)]

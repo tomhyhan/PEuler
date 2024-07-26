@@ -11,10 +11,12 @@ def dfs(node, DP, graph, sales):
         dfs(nnode, DP, graph, sales)
         sum_child += min(DP[nnode])
         min_diff = min(min_diff, DP[nnode][1] - DP[nnode][0])
+        # we are choosing the smaller amount
         if DP[nnode][0] > DP[nnode][1]:
             include_leader = True
             
     DP[node][1] += sum_child
+    # if we have included at least one leader, than we can simple use sum_child 
     DP[node][0] = sum_child if include_leader else sum_child + min_diff
     
 def solution(sales, links):
