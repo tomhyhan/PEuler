@@ -1,69 +1,44 @@
 import re
 
-def find_and_replace(s):
-    stack = ""
-    i11 = -1
-    i0 = -1
-    i1 = -1
-    cnt = 0
+def find_110(s):
+    stack = []
     
-    len_s = len(s)
+    n_110 = 0
+    for i in range(len(s)):
+        stack.append(s[i])
+
+        if len(stack) > 2 and ''.join(stack[-3:])== "110":
+            n_110 += 1
+            stack.pop()
+            stack.pop()
+            stack.pop()
     
-    s = s[::-1]
-    i = 0
-    print(s)
-    while i < len_s:
-        if s[i:i+3] == "011":
-            i += 2
-            cnt += 1
-            print(i, s[i:i+3])
-        elif s[i:i+2] == "11":
-            stack = s[i:i+2] + stack
-            i += 1
-            i11 = len_s-i-1 
-        elif s[i] == '0':
-            stack = s[i] + stack
-            i0 = len_s-i-1  if i0 == -1 else i0
-        elif s[i] == '1':
-            stack = s[i] + stack
-            i1 = len_s-i-1 
-        else:
-            raise Exception("wrong")
-        i += 1
-    return stack, cnt, i11, i0, i1
-             
+    return ''.join(stack), n_110
 
 def solution(s):
     for i in range(len(s)):
-        a, cnt, i11, i0, i1 = find_and_replace(s[i])
-        print(a, cnt, i11, i0, i1)
-        while True:
-            if i11 != -1:
-                s[i] = a[:i11] + "110" * cnt + a[i11:]
-            else:
-                if i0 != -1:
-                    s[i] = a[:i0+1] + "110" * cnt + a[i0+1:]
-                else:
-                    s[i] = a[:i1] + "110" * cnt + a[i1:]
-            a, curr_cnt, i11, i0, i1 = find_and_replace(s[i])
-            if curr_cnt > cnt:
-                cnt = curr_cnt
-            else:
-                break 
-    print(s)
-            
+        stack, n_110 = find_110(list(s[i]))
+        stack = stack[::-1]
+        idx_0 = stack.find('0')
+        print("idx_0", idx_0, n_110, stack)
+        if idx_0 != -1:
+            s[i] = ''.join(stack[:idx_0] + "011" * n_110 + stack[idx_0:])[::-1]
+        else:
+            s[i] = ''.join(stack + "011" * n_110 )[::-1]
     return s
+
+    print(s)
+    #     pass
             # s[i] = s[i].replace("110", "") + "110" * cnt
 
 # ["1101","100110110","0110110111"]
-# solution(["1110","100111100","0111111010"])
-# 0101101101101101
+solution(["1110","100111100","0111111010"])
+# 0111
 
 # 0111011011011001
 # 0101101101101101
 # 1100110110110101
-# solution(["1100110110110101"])
-solution(["0111111010"])
+solution(["1100110110110101"])
 
 # 1 110 0 0 11 110 0
 # 1  0 0 110 110 11  0
