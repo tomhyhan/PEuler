@@ -1,35 +1,39 @@
 def solution(N, number):
 
-    operands = ["-", "+", "*", "/"]
-    def helper(evaluation, isNum, p_open, n_used):
-        if not isNum:
-            evaluation2 = evaluation + ')'
-            try:
-                if eval(evaluation) == number:
-                    print(evaluation)
-                print(eval(evaluation))
-            except Exception:
-                pass
-            
-        if n_used == 0:
-            return
-        # print(evaluation)
-        if isNum:
-            for i in range(1, n_used + 1):
-                num = str(N) * i 
-                if n_used - i != 0:
-                    helper(evaluation + f"({num}", False, p_open+1, n_used - i)
-                elif n_used - i != 0 and p_open > 0:
-                    helper(evaluation + f"{num})", False, p_open-1, n_used - i)
-                
-                helper(evaluation + num, False, p_open, n_used - i)
-        else:
-            for op in operands:
-                helper(evaluation + op, True, p_open, n_used)
-    helper("", True, 0, 8)
+    operands = {
+        "-" : lambda a, b: a - b, 
+        "+" : lambda a, b: a + b, 
+        "*" : lambda a, b: a * b, 
+        "//" : lambda a, b: a // b
+    }
+    nums = [set() for _ in range(9)]
     
+    for i in range(1, 9):
+        nn = int(str(N) * i)
+        if number == nn:
+            return i
+        nums[i].add(nn)
+    
+    for i in range(1, 9):
+        for j in range(1, i):
+            k = i - j
+            for x in nums[j]:
+                for y in nums[k]:
+                    for operand in operands:
+                        if operand == "//" and y == 0:
+                            continue
+                        result = operands[operand](x,y)
+                        if result == number:
+                            return i
+                        nums[i].add(result)
 
-# 12 = 5 + 5 + (5 / 5) + (5 / 5)
-# 12 = 55 / 5 + 5 / 5
-# 12 = (55 + 5) / 5
-solution(5, 12)
+    return -1 
+    
+# 5 55 555 5555
+# 1 - 5
+# 2 - 55 5+5 5-5 5*5 5//5
+# 3 - 5+5+5 5+5-5 5+5*5 5+5//5
+#   - 55+5 55-5 55*5 55//5
+#   - 5+55 5-55 5*55 5//55
+print(solution(5, 12))
+print(solution(2,11))
