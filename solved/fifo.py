@@ -24,22 +24,31 @@ def solution(n, cores):
 
 def solution(n, cores):
     n -= len(cores)
-    left = 1
+    left = 0
     right = max(cores) * n
-
-    while left < right:
-        mid = (left + right) // 2
-        capacity = 0
-        for c in cores:
-            capacity += mid // c
-        if capacity >= n:
-            right = mid
-        else:
-            left = mid + 1    
     
-    print(left, right)
-       
-# [2,1]
+    while left < right:
+        mid_time = (left + right) // 2
+        
+        current_n = 0
+        for core in cores:
+            current_n += mid_time // core
+
+        if current_n >= n:
+            right = mid_time
+        else:
+            left = mid_time + 1
+
+    less_right = right - 1
+    for core in cores:
+        n -= less_right // core 
+        
+    for idx, core in enumerate(cores):
+        if right % core == 0:
+            n -= 1
+            if n == 0:
+                return idx + 1
+# [2,1] 
 # 1 2 3 4 5 6 
 # 1 
-solution(6, [1,2,3])
+solution(6, [1,2,3]) 
