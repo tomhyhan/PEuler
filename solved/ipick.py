@@ -43,7 +43,7 @@ def solution(rectangle, characterX, characterY, itemX, itemY):
                 new_debug = [d for d in debug]
                 new_debug.append((new_cx, new_cy))
                 stack.append((distance + 0.5, new_cx, new_cy, new_debug))
-
+    return min_distances
     print(min_distances)
 solution([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]], 1, 3, 7, 8)
 

@@ -1,6 +1,6 @@
 from collections import defaultdict
 import sys
-sys.setrecursionlimit(5000)
+sys.setrecursionlimit(300_000)
 
 def helper(node, a, graph, visited):
     visited.add(node)
@@ -19,11 +19,16 @@ def helper(node, a, graph, visited):
 def solution(a, edges):
     if sum(a) != 0:
         return -1
-    
+    degree = defaultdict(int)
     graph = defaultdict(list)
     for s, e in edges:
         graph[s].append(e)
         graph[e].append(s)
+        
+        degree[s] += 1
+        degree[e] += 1
+        
+    print(degree)
     
     s, w = helper(0, a, graph, set())
     # print(w)
