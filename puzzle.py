@@ -59,13 +59,43 @@ def normalize_block(blocks):
         new_blocks.append(new_block)
     return new_blocks
 
+def rotate_block(block):
+    return [list(row) for row in zip(*block[::-1])]
+
+def find_match_block(game_block, table_blocks, matches, used):
+    for i, table_block in enumerate(table_blocks):
+        if i in used:
+            continue    
+        rotated_t_b = rotate_block(table_block)
+        for _ in range(4):
+            if game_block == rotated_t_b:
+                matches.append(game_block)
+                used.add(i)
+                return
+            rotated_t_b = rotate_block(rotated_t_b)
+
 def solution(game_board, table):
     
     game_blocks = get_blocks(game_board, 0)
     new_game_blocks = normalize_block(game_blocks)
     table_blocks = get_blocks(table, 1)
     new_table_blocks = normalize_block(table_blocks)
-    print(new_game_blocks)
-    print(new_table_blocks)
+    
+    used = set()
+    matches = []
+    for game_block in new_game_blocks:
+        find_match_block(game_block, new_table_blocks, matches, used)
+    
+    match_cnt = 0 
+    
+    for block in matches:
+        for row in block:
+            match_cnt += row.count(1)
+    # print(match_cnt)
+    return match_cnt
+    # print(new_game_blocks)
+    # print(new_table_blocks)
+    # print(rotate_block([[1],[1]]))
     
 solution([[1,1,0,0,1,0],[0,0,1,0,1,0],[0,1,1,0,0,1],[1,1,0,1,1,1],[1,0,0,0,1,0],[0,1,1,1,0,0]], [[1,0,0,1,1,0],[1,0,1,0,1,0],[0,1,1,0,1,1],[0,0,1,0,0,0],[1,1,0,1,1,0],[0,1,0,0,0,0]])
+solution([[0,0,0],[1,1,0],[1,1,1]], [[1,1,1],[1,0,0],[0,0,0]])
