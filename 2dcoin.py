@@ -30,10 +30,57 @@ def solution(beginning, target):
                 return total_flips
     return -1 
 
+# idea 1: flip rows -> flip cols in line by line -> check if fliped == target
+# idea 2: start with board by comparing begin and target -> flip the rows -> check if only 0 or 1 is in col line, and if 1 is in col line add 1 to count
 def solution(beginning, target):
-    print((1 << 0) & 3)
-    print((1 << 1) & 3)
-    print((1 << 2) & 3)
+    
+    n_rows = len(beginning)
+    n_cols = len(target)
+    low_flips = float('inf')
+    
+    for bits in range(2**n_rows):
+        row_begin = [[col for col in row] for row in beginning] 
+        flips = 0
+        for row in range(n_rows):
+            if (1 << row) & bits:
+                row_begin[row] = [1-cur for cur in row_begin[row]] 
+                flips += 1
+                
+        for col in range(n_cols):
+            curr_col = []
+            target_col = []
+
+            for row in range(n_rows):
+                curr_col.append(row_begin[row][col])
+                target_col.append(target[row][col])
+                
+            if curr_col != target_col:
+                for row in range(n_rows):
+                    row_begin[row][col] = 1-row_begin[row][col]
+                flips += 1
+                
+        if row_begin == target:
+            low_flips = min(low_flips, flips)
+            
+    return -1 if low_flips == float('inf') else low_flips       
+        
+# very cool solution
+# def solution(beginning, target):
+#     answer = 0
+#     table = [[beginning[i][j] ^ target[i][j] for j in range(len(beginning[i]))] for i in range(len(beginning))]
+#     cnt = 0
+#     m = len(table)
+#     n = len(table[0])
+#     print(table)
+#     for i in range(1, m):
+#         if (table[i] != table[0]):
+#             cnt+=1
+#             if (list(map(lambda x: x ^ 1, table[i])) != table[0]):
+#                 return -1
+
+#     answer = min((cnt) + sum(table[0]), (m - cnt) + (n - sum(table[0])))
+
+#     return answer
 
 solution([[0, 1, 0, 0, 0], [1, 0, 1, 0, 1], [0, 1, 1, 1, 0], [1, 0, 1, 1, 0], [0, 1, 0, 1, 0]], [[0, 0, 0, 1, 1], [0, 0, 0, 0, 1], [0, 0, 1, 0, 1], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]) 
 # solution([[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1, 0, 1], [0, 0, 0], [0, 0, 0]])
