@@ -22,9 +22,34 @@
 #     # print(lighted) 
 #     return lighted
 
-def solution(n, lighthouse):
-    
-    pass
+import sys
+from collections import defaultdict
 
-# solution(8, [[1, 2], [1, 3], [1, 4], [1, 5], [5, 6], [5, 7], [5, 8]])
+sys.setrecursionlimit(1e6)
+
+def solution(n, lighthouse):
+    graph = defaultdict(list)
+    
+    for s, e in lighthouse:
+        graph[s].append(e)
+        graph[e].append(s)
+
+    lights = set()
+    
+    n_lights = dfs(1, 1, graph, lights)
+    return n_lights
+    
+def dfs(node, parent, graph, lights):
+    n_lights = 0
+    for child in graph[node]:
+        if child == parent:
+            continue
+        n_lights += dfs(child, node, graph, lights)
+        
+        if node not in lights and child not in lights:
+            lights.add(node)
+            n_lights += 1
+    return n_lights
+
+solution(8, [[1, 2], [1, 3], [1, 4], [1, 5], [5, 6], [5, 7], [5, 8]])
 solution(10, [[4, 1], [5, 1], [5, 6], [7, 6], [1, 2], [1, 3], [6, 8], [2, 9], [9, 10]])
