@@ -2,7 +2,7 @@ def sieve_of_eratosthenes(limit):
     primes = [True] * (limit + 1)
     p = 2
     
-    while p * p <= limit:
+    while p  <= limit:
         if primes[p] is True:
             for i in range(p * p, limit + 1, p):
                 primes[i] = False
@@ -11,27 +11,29 @@ def sieve_of_eratosthenes(limit):
     prime_numbers = {p for p in range(2, limit + 1) if primes[p]}
     return prime_numbers
 
+import math 
+
+def sieve_of_eratosthenes(limit):
+    cmmn_cnts = [0] * (limit + 1)
+    p = 2
+    
+    while p <= limit // 2 + 1:
+        for i in range(2*p, limit + 1, p):
+            cmmn_cnts[i] += 1
+        p += 1
+
+    return cmmn_cnts
+
 def solution(e, starts):
-    primes = sieve_of_eratosthenes(e)
+    cmmn_cnts = sieve_of_eratosthenes(e)
     answer = []
-    cnts = [0 for i in range(e + 1)]
+    for num in starts:
+        numbers = cmmn_cnts[num:e+1]
+        max_value = max(numbers)
+        max_index = numbers.index(max_value)
+        answer.append(num + max_index)
+    # print(answer)
+    return answer
 
-    # primes = 
-    
-    for i in range(2,e+1):
-        if i in primes:
-            continue
-        cnts[i] = cnt_common_div(i)
-        
-        #     passis_prime(i):
-        #     cnts[i] = 1
-        # else:
-    
-    # print(cnts)
-    # for num in starts:
-    #     print(sorted(cnts[num:e+1], ))
-    #     pass        
-
-
-# solution(8, [1,3,7])
-solution(5000000, [1,3,7])
+solution(8, [1,3,7])
+# solution(12, [1,3,7])
