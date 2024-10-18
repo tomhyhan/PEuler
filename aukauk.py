@@ -26,14 +26,23 @@ def sieve_of_eratosthenes(limit):
 
 def solution(e, starts):
     cmmn_cnts = sieve_of_eratosthenes(e)
-    answer = []
-    for num in starts:
-        numbers = cmmn_cnts[num:e+1]
-        max_value = max(numbers)
-        max_index = numbers.index(max_value)
-        answer.append(num + max_index)
-    # print(answer)
-    return answer
+    memo = {}
+    current_max = -1
+    current_index = -1
+    right_bound = e+1
+    for num in sorted(starts, reverse=True):
+        nums = cmmn_cnts[num:right_bound]
+        max_value = max(nums)
+        max_index = nums.index(max_value) + num
+        
+        if max_value >= current_max:
+            current_max = max_value
+            current_index = max_index
+        
+        right_bound = num
+        memo[num] = current_index
+    # print(memo)
+    return [memo[start] for start in starts]
 
 solution(8, [1,3,7])
 # solution(12, [1,3,7])
