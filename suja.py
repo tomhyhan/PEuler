@@ -95,26 +95,49 @@
 import sys
 sys.setrecursionlimit(int(1e6))
 
-costs =     [[1, 7, 6, 7, 5, 4, 5, 3, 2, 3]
-            ,[7, 1, 2, 4, 2, 3, 5, 4, 5, 6]
-            ,[6, 2, 1, 2, 3, 2, 3, 5, 4, 5]
-            ,[7, 4, 2, 1, 5, 3, 2, 6, 5, 4]
-            ,[5, 2, 3, 5, 1, 2, 4, 2, 3, 5]
-            ,[4, 3, 2, 3, 2, 1, 2, 3, 2, 3]
-            ,[5, 5, 3, 2, 4, 2, 1, 5, 3, 2]
-            ,[3, 4, 5, 6, 2, 3, 5, 1, 2, 4]
-            ,[2, 5, 4, 5, 3, 2, 3, 2, 1, 2]
-            ,[3, 6, 5, 4, 5, 3, 2, 4, 2, 1]]
+def get_cost(num_pos):
+    costs = []
+    for i in range(10):
+        cost = []
+        for j in range(10):
+            cost.append(clac_distance(num_pos[i], num_pos[j]))
+        costs.append(cost)
+    return costs
 
 def solution(numbers):
-    nums = {i+1:(i//3, i%3) for i in range(9)}
-    nums[0] = (3,1)
+    num_pos = {i+1:(i//3, i%3) for i in range(9)}
+    num_pos[0] = (3,1)
 
-    poses = helper({(4, 6):0}, numbers, nums)
-    # print(poses)
+    costs = get_cost(num_pos)
+
+    poses = {(4, 6):0}
+    
+    for num in numbers:
+        current_num = int(num)
+            
+        new_poses = {}
+        for (left, right), moves in poses.items():
+            
+            left_moves = costs[left][current_num]
+            right_moves = costs[right][current_num]
+            
+            t_left_moves = moves + left_moves
+            t_right_moves = moves + right_moves
+            
+            left_key = (current_num, right)
+            right_key = (left, current_num)
+            
+            if right_moves != 1 and (left_key not in new_poses or t_left_moves < new_poses[left_key]):
+                new_poses[left_key] = t_left_moves
+            if left_moves != 1 and (right_key not in new_poses or t_right_moves < new_poses[right_key]):
+                new_poses[right_key] = t_right_moves
+        poses = new_poses
+        
+    # print(min(poses.values()))
     return min(poses.values())
 
-def helper(hand_poses, numbers, num_pos):
+    # poses = helper({(4, 6):0}, numbers, costs)
+def helper(hand_poses, numbers, costs):
     if not numbers:
         return hand_poses
     
@@ -124,28 +147,20 @@ def helper(hand_poses, numbers, num_pos):
     for (left, right), moves in hand_poses.items():
         
         left_moves = costs[left][current_num]
-        # clac_distance(num_pos[left], num_pos[current_num])
         right_moves = costs[right][current_num]
-        # clac_distance(num_pos[right], num_pos[current_num])
+        
         t_left_moves = moves + left_moves
         t_right_moves = moves + right_moves
          
         left_key = (current_num, right)
         right_key = (left, current_num)
         
-        if left_moves == 1:
-            if left_key not in new_poses or t_left_moves < new_poses[left_key]:
-                new_poses[left_key] = t_left_moves
-        elif right_moves == 1:
-            if right_key not in new_poses or t_right_moves < new_poses[right_key]:
-                new_poses[right_key] = t_right_moves
-        else:
-            if left_key not in new_poses or t_left_moves < new_poses[left_key]:
-                new_poses[left_key] = t_left_moves
-            if right_key not in new_poses or new_poses and t_right_moves < new_poses[right_key]:
-                new_poses[right_key] = t_right_moves
+        if right_moves != 1 and (left_key not in new_poses or t_left_moves < new_poses[left_key]):
+            new_poses[left_key] = t_left_moves
+        if left_moves != 1 and (right_key not in new_poses or t_right_moves < new_poses[right_key]):
+            new_poses[right_key] = t_right_moves
                 
-    return helper(new_poses, numbers[1:], num_pos)
+    return helper(new_poses, numbers[1:], costs)
         
 def clac_distance(num_pos, hand_pos):
     if num_pos == hand_pos:
@@ -160,7 +175,3 @@ def clac_distance(num_pos, hand_pos):
     max_t = max(trow, tcol) 
     min_t = min(trow, tcol)
     return min_t * 3 + (max_t - min_t) * 2  
-
-solution("1756")
-# solution1("1756")
-# solution("5123")
