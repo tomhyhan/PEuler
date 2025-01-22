@@ -42,8 +42,6 @@ def solution(tickets):
     print(routes)
     while len(stack) > 0:
         top = stack[-1]
-        print("top", top)
-        print("routes", routes)
         if top not in routes or len(routes[top]) == 0:
             path.append(stack.pop())
         else:
@@ -53,7 +51,7 @@ def solution(tickets):
     return path[::-1]
 
 # solution([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])
-solution([["ICN", "SFO"], ["ICN", "ATL"], ["SFO", "ATL"], ["ATL", "ICN"], ["ATL","SFO"]])
+# solution([["ICN", "SFO"], ["ICN", "ATL"], ["SFO", "ATL"], ["ATL", "ICN"], ["ATL","SFO"]])
 
 # solution([["EZE","TIA"],["EZE","HBA"],["AXA","TIA"],["ICN","AXA"],["ANU","ICN"],["ADL","ANU"],["TIA","AUA"],["ANU","AUA"],["ADL","EZE"],["ADL","EZE"],["EZE","ADL"],["AXA","EZE"],["AUA","AXA"],["ICN","AXA"],["AXA","AUA"],["AUA","ADL"],["ANU","EZE"],["TIA","ADL"],["EZE","ANU"],["AUA","ANU"]])
 
