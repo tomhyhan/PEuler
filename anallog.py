@@ -35,7 +35,7 @@ def solution(h1, m1, s1, h2, m2, s2):
         cnt += 1
     
     print(cnt)
-# 0.0166
+
 # solution(0, 5, 30, 0, 7, 0) # 2
 # solution(12, 0, 0, 12, 0, 30) # 1
 # solution(0, 6, 1, 0, 6, 6) # 0
